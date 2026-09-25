@@ -13,7 +13,12 @@ import { connectDB } from './config/db.js';
 const PORT = process.env.PORT || 5000;
 
 async function startServer() {
-  await connectDB();
+  try {
+    await connectDB();
+  } catch (err) {
+    console.error(`Failed to connect to MongoDB: ${err.message}`);
+    process.exit(1);
+  }
 
   const server = app.listen(PORT, () => {
     console.log(`\n🚀 MERN Quiz Server running on http://localhost:${PORT}`);

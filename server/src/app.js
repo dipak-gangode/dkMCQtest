@@ -17,29 +17,32 @@ import { errorHandler, notFoundHandler } from './middleware/errorHandler.js';
 
 const app = express();
 
+// Trust proxy for Vercel and reverse proxy environments
+app.set('trust proxy', 1);
+
 // Security HTTP headers
 app.use(
   helmet({
-    contentSecurityPolicy: false, // Allows cross-origin assets during dev
+    contentSecurityPolicy: false,
     crossOriginEmbedderPolicy: false,
   })
 );
 
 // CORS configuration
-const allowedOrigins = [
-  process.env.CLIENT_URL || 'http://localhost:5173',
-  'http://localhost:5173',
-  'http://127.0.0.1:5173',
-];
-
 app.use(
   cors({
     origin: function (origin, callback) {
-      // Allow requests with no origin (like mobile apps, curl, or same-origin)
-      if (!origin || allowedOrigins.includes(origin)) {
+      // Allow requests with no origin (curl, mobile, same-origin) or any Vercel domain / localhost
+      if (
+        !origin ||
+        origin.includes('localhost') ||
+        origin.includes('127.0.0.1') ||
+        origin.endsWith('.vercel.app') ||
+        origin === process.env.CLIENT_URL
+      ) {
         callback(null, true);
       } else {
-        callback(null, true); // Dev flexible
+        callback(null, true); // Allow API consumer flexibility
       }
     },
     credentials: true,
@@ -54,6 +57,23 @@ app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 
 // Rate limiting on API routes
 app.use('/api', apiLimiter);
+
+// API Root info
+app.get('/api', (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'MERN Bhai Quiz API is live and kicking! 🔥',
+    version: '1.0.0',
+    endpoints: {
+      health: '/api/health',
+      topics: '/api/topics',
+      questions: '/api/quiz/questions',
+      answer: '/api/quiz/answer',
+      finish: '/api/quiz/finish',
+      stats: '/api/quiz/stats',
+    },
+  });
+});
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
