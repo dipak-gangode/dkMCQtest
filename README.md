@@ -115,8 +115,7 @@ MERN Quiz/
 │   │   │   ├── git.js (15)
 │   │   │   ├── restApi.js (15)
 │   │   │   ├── auth.js (15)
-│   │   │   └── webFundamentals.js (20)
-│   │   ├── reactions.js           # Roast export bridge
+│   │   ├── import300Questions.js  # 300 JSON questions deduplication importer
 │   │   └── seedDatabase.js        # Duplicate-detecting validation seeder
 │   └── test/
 │       └── quiz.test.js           # Comprehensive automated API tests
@@ -294,5 +293,47 @@ Finalizes the session, determines final accuracy, assigns the Bhai Performance B
 
 ---
 
+## 🚀 Deploying to Vercel
+
+This repository is configured for zero-configuration, seamless fullstack deployment on [Vercel](https://vercel.com).
+
+### Deployment Architecture on Vercel:
+- **Frontend**: Built via Vite into `client/dist`, served statically via Vercel's global CDN with SPA client routing.
+- **Backend API**: Powered by Vercel Serverless Functions (`api/index.js`), routing all `/api/*` traffic through Express with cached MongoDB connection pooling.
+
+### Step-by-Step Vercel Deployment:
+
+1. **Push your code to GitHub / GitLab / Bitbucket**:
+   ```bash
+   git add .
+   git commit -m "Configure fullstack Vercel deployment"
+   git push origin main
+   ```
+
+2. **Import Project into Vercel**:
+   - Go to [vercel.com/new](https://vercel.com/new).
+   - Select your repository.
+   - Framework Preset: Leave as **Other** (configured automatically via `vercel.json`).
+   - Root Directory: `./` (leave default).
+
+3. **Configure Environment Variables in Vercel**:
+   Add the following in **Project Settings -> Environment Variables**:
+   - `MONGODB_URI`: Your MongoDB Atlas connection string:
+     `mongodb+srv://<username>:<password>@cluster0.abcde.mongodb.net/mern_quiz_db?retryWrites=true&w=majority`
+   - `NODE_ENV`: `production`
+
+4. **Seed Database (One-time)**:
+   Ensure your MongoDB Atlas cluster has network access enabled (`0.0.0.0/0` in Atlas Network Access).
+   Run the database seeder locally once pointing to your Atlas URI:
+   ```bash
+   MONGODB_URI="your-atlas-uri" npm run seed
+   ```
+
+5. **Hit Deploy! 🚀**:
+   Vercel will build the frontend into `client/dist` and expose the Express API under `/api/*` automatically!
+
+---
+
 ## 📄 License
 MIT License. Built with ❤️ and Desi Bhai Swag for Indian & Global Developers!
+"# dkMCQtest" 
